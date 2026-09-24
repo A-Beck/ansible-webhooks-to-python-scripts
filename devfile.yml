@@ -14,3 +14,32 @@ components:
       env:
         - name: "ADT_CONTAINER_ENGINE"
           value: "podman"
+commands:
+  - id: inject-aap-password
+    exec:
+      component: dev-tools
+      commandLine: |
+        PASSWORD=$(oc get secret sandbox-aap-admin-password -o jsonpath='{.data.password}' | base64 -d)
+        printf 'export AAP_PASSWORD=%q\n' "$PASSWORD" >> "${HOME}/.bashrc"
+  - id: install-collections
+    exec:
+      component: dev-tools
+      commandLine: ansible-galaxy collection install -r collections/requirements.yml
+      workingDir: ${PROJECT_SOURCE}
+  - id: configure-aap
+    exec:
+      component: dev-tools
+      commandLine: >
+        ansible-playbook config_as_code/setup_aap.yml
+        -e aap_hostname=http://sandbox-aap
+        -e aap_username=admin
+        -e aap_password=${AAP_PASSWORD}
+        -e aap_validate_certs=false
+      workingDir: ${PROJECT_SOURCE}
+      group:
+        kind: run
+        isDefault: true
+events:
+  postStart:
+    - inject-aap-password
+    - install-collections
