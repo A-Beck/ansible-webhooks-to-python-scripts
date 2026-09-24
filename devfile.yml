@@ -12,9 +12,5 @@ components:
       memoryRequest: 128Mi
       memoryLimit: 8Gi
       env:
-        - name: HOME
-          value: "/projects"
-        - name: VSCODE_DEFAULT_WORKSPACE
-          value: "/projects/ansible-devspaces/.code-workspace"
         - name: "ADT_CONTAINER_ENGINE"
           value: "podman"

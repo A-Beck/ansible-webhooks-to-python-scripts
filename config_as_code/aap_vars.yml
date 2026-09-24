@@ -1,2 +1,71 @@
 ---
-job_templates:
+# AAP Controller objects for the webhook → job template → ServiceNow demo.
+# Auth (aap_hostname, aap_username/aap_password or aap_token) is passed at
+# apply time via extra vars — do not commit secrets here.
+
+controller_credential_types:
+  - name: ServiceNow
+    description: ServiceNow instance credentials for incident creation
+    kind: cloud
+    inputs:
+      fields:
+        - type: string
+          id: sn_base_url
+          label: ServiceNow Base URL
+        - type: string
+          id: sn_username
+          label: ServiceNow Username
+        - type: string
+          id: sn_password
+          label: ServiceNow Password
+          secret: true
+      required:
+        - sn_base_url
+        - sn_username
+        - sn_password
+    injectors:
+      env:
+        SN_BASE_URL: !unsafe "{{ sn_base_url }}"
+        SN_USERNAME: !unsafe "{{ sn_username }}"
+        SN_PASSWORD: !unsafe "{{ sn_password }}"
+
+controller_credentials:
+  - name: ServiceNow Demo
+    description: Demo ServiceNow credential (replace CHANGE_ME values before use)
+    organization: Default
+    credential_type: ServiceNow
+    inputs:
+      sn_base_url: CHANGE_ME
+      sn_username: CHANGE_ME
+      sn_password: CHANGE_ME
+
+controller_projects:
+  - name: ansible-webhooks-to-python-scripts
+    description: Webhook to Python script demo project
+    organization: Default
+    scm_type: git
+    scm_url: https://github.com/A-Beck/ansible-webhooks-to-python-scripts.git
+    scm_branch: main
+    scm_update_on_launch: true
+
+controller_inventories:
+  - name: Demo Localhost
+    description: Localhost inventory for running scripts on the controller
+    organization: Default
+
+controller_hosts:
+  - name: localhost
+    inventory: Demo Localhost
+    variables:
+      ansible_connection: local
+
+controller_templates:
+  - name: open_snow_incident
+    description: Create a ServiceNow incident via Python script
+    organization: Default
+    project: ansible-webhooks-to-python-scripts
+    playbook: playbooks/run_snow_incident_script.yml
+    inventory: Demo Localhost
+    credentials:
+      - ServiceNow Demo
+    ask_credential_on_launch: false

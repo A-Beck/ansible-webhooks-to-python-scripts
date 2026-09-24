@@ -1,6 +1,15 @@
 ---
-- name: Setup AAP objects
+- name: Configure Ansible Automation Platform
   hosts: localhost
-  include_vars:
-    - {{ playbook_dir }}/aap_vars.yml
+  connection: local
+  gather_facts: false
+
+  pre_tasks:
+    - name: Load AAP configuration variables
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/aap_vars.yml"
+
   tasks:
+    - name: Apply AAP configuration via dispatch
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.dispatch

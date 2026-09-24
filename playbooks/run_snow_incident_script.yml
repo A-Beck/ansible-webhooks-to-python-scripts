@@ -4,4 +4,4 @@
   hosts: localhost
   tasks:
     - name: Run snow incident script
-      ansible.builtin.script: {{ playbook_dir }}/scripts/create_snow_incident.py
+      ansible.builtin.script: "{{ playbook_dir }}/../scripts/create_snow_incident.py"
