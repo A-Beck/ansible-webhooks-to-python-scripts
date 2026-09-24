@@ -42,4 +42,3 @@ commands:
 events:
   postStart:
     - inject-aap-password
-    - install-collections
