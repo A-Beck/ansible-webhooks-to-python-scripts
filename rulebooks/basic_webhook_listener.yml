@@ -1,0 +1,16 @@
+---
+- name: Receive Message Events On Webhook
+  hosts: all
+  sources:
+    - ansible.eda.webhook:
+        host: 0.0.0.0
+        port: 5000
+        ssl_verify: no
+
+  rules:
+    - name: Trigger action when any disk usage exceeds 40%
+      condition: event.payload.disks is selectattr('use_percent', 'regex', '^(4[1-9]|[5-9][0-9]|100)%$') 
+      action:
+        run_job_template:
+          name: Get Disk Usage & Open ServicNow Incident
+          organization: Default

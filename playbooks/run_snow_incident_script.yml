@@ -1,0 +1,7 @@
+---
+
+- name: Create Snow Incident via python script
+  hosts: localhost
+  tasks:
+    - name: Run snow incident script
+      ansible.builtin.script: {{ playbook_dir }}/scripts/create_snow_incident.py

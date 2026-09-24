@@ -1,0 +1,6 @@
+---
+- name: Setup AAP objects
+  hosts: localhost
+  include_vars:
+    - {{ playbook_dir }}/aap_vars.yml
+  tasks:
