@@ -19,8 +19,12 @@ commands:
     exec:
       component: dev-tools
       commandLine: |
+        ENV_FILE="${HOME}/.config/aap_env"
+        mkdir -p "$(dirname "$ENV_FILE")"
         PASSWORD=$(oc get secret sandbox-aap-admin-password -o jsonpath='{.data.password}' | base64 -d)
-        printf 'export AAP_PASSWORD=%q\n' "$PASSWORD" >> "${HOME}/.bashrc"
+        printf 'export AAP_PASSWORD=%q\n' "$PASSWORD" > "$ENV_FILE"
+        grep -qF "source ${ENV_FILE}" "${HOME}/.bashrc" 2>/dev/null || \
+          printf '\n[ -f %s ] && source %s\n' "$ENV_FILE" "$ENV_FILE" >> "${HOME}/.bashrc"
   - id: install-collections
     exec:
       component: dev-tools
