@@ -82,7 +82,15 @@ eda_credentials:
       host: "{{ aap_hostname }}"
       username: "{{ aap_username }}"
       password: "{{ aap_password }}"
-      verify_ssl: "{{ aap_validate_certs | default(true) }}"
+      verify_ssl: "{{ aap_validate_certs | default(false) | bool }}"
+
+  - name: Disk Usage Event Stream Auth
+    description: Basic auth for the disk usage webhook event stream (replace CHANGE_ME)
+    organization: Default
+    credential_type: Basic Event Stream
+    inputs:
+      username: redhat
+      password: redhat
 
 eda_projects:
   - name: ansible-webhooks-to-python-scripts
@@ -91,6 +99,12 @@ eda_projects:
     url: https://github.com/A-Beck/ansible-webhooks-to-python-scripts.git
     scm_branch: main
     sync: true
+
+eda_event_streams:
+  - name: Disk Usage Event Stream
+    organization: Default
+    credential_name: Disk Usage Event Stream Auth
+    forward_events: true
 
 eda_decision_environments:
   - name: Demo Decision Environment
@@ -103,10 +117,14 @@ eda_rulebook_activations:
     description: Listen for disk usage webhooks and launch open_snow_incident
     organization: Default
     project: ansible-webhooks-to-python-scripts
-    rulebook: rulebooks/basic_webhook_listener.yml
+    rulebook: basic_webhook_listener.yml
     decision_environment: Demo Decision Environment
     eda_credentials:
       - AAP Controller
+    event_streams:
+      - event_stream: Disk Usage Event Stream
+        source_name: disk_usage_alerts
+    swap_single_source: true
     restart_policy: always
     enabled: true
     state: present
