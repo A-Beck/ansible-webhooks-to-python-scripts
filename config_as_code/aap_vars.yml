@@ -1,5 +1,6 @@
 ---
-# AAP Controller objects for the webhook → job template → ServiceNow demo.
+# AAP Controller + EDA objects for the webhook → rulebook → job template →
+# ServiceNow demo.
 # Auth (aap_hostname, aap_username/aap_password or aap_token) is passed at
 # apply time via extra vars — do not commit secrets here.
 
@@ -69,3 +70,43 @@ controller_templates:
     credentials:
       - ServiceNow Demo
     ask_credential_on_launch: false
+
+# --- Event-Driven Ansible ---
+
+eda_credentials:
+  - name: AAP Controller
+    description: Allows EDA to launch Controller job templates (uses setup playbook auth vars)
+    organization: Default
+    credential_type: Red Hat Ansible Automation Platform
+    inputs:
+      host: "{{ aap_hostname }}"
+      username: "{{ aap_username }}"
+      password: "{{ aap_password }}"
+      verify_ssl: "{{ aap_validate_certs | default(true) }}"
+
+eda_projects:
+  - name: ansible-webhooks-to-python-scripts
+    description: EDA rulebooks for the webhook demo
+    organization: Default
+    url: https://github.com/A-Beck/ansible-webhooks-to-python-scripts.git
+    scm_branch: main
+    sync: true
+
+eda_decision_environments:
+  - name: Demo Decision Environment
+    description: Decision environment for the webhook rulebook demo
+    organization: Default
+    image_url: quay.io/ansible/ansible-rulebook:latest
+
+eda_rulebook_activations:
+  - name: disk_usage_webhook
+    description: Listen for disk usage webhooks and launch open_snow_incident
+    organization: Default
+    project: ansible-webhooks-to-python-scripts
+    rulebook: rulebooks/basic_webhook_listener.yml
+    decision_environment: Demo Decision Environment
+    eda_credentials:
+      - AAP Controller
+    restart_policy: always
+    enabled: true
+    state: present

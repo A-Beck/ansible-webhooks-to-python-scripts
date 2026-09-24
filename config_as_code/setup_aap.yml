@@ -3,6 +3,9 @@
   hosts: localhost
   connection: local
   gather_facts: false
+  # Pass aap_hostname, aap_username, aap_password (and optionally
+  # aap_validate_certs) via -e / extra vars. Those same values are reused
+  # for the EDA "AAP Controller" credential in aap_vars.yml.
 
   pre_tasks:
     - name: Load AAP configuration variables
