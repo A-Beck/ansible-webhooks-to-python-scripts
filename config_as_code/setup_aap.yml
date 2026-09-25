@@ -10,7 +10,7 @@
   pre_tasks:
     - name: Load AAP configuration variables
       ansible.builtin.include_vars:
-        file: "{{ playbook_dir }}/aap_vars.yml"
+        file: "{{ item }}"
       loop:
         - "{{ playbook_dir }}/aap_vars.yml"
         - "{{ playbook_dir }}/aap_secrets.yml"
