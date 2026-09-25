@@ -36,9 +36,9 @@ controller_credentials:
     organization: Default
     credential_type: ServiceNow
     inputs:
-      sn_base_url: CHANGE_ME
-      sn_username: CHANGE_ME
-      sn_password: CHANGE_ME
+      sn_base_url: "{{ sn_base_url }}"
+      sn_username: "{{ sn_username }}"
+      sn_password: "{{ sn_password }}"
 
 controller_projects:
   - name: ansible-webhooks-to-python-scripts
