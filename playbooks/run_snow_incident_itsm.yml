@@ -1,0 +1,13 @@
+---
+- name: Create Snow Incident via servicenow.itsm
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Create incident
+      servicenow.itsm.incident:
+        state: new
+        caller: Troy Ellis
+        short_description: "{{ event_payload.event_type | default('unknown') }} alert on {{ event_payload.hostname | default('unknown') }}"
+        description: "{{ event_payload | default({}) | to_nice_json }}"
+        impact: low
+        urgency: low

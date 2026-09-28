@@ -9,3 +9,4 @@ collections:
   - name: ansible.eda
     version: ">=2.5.0"
   - name: infra.aap_configuration
+  - name: servicenow.itsm

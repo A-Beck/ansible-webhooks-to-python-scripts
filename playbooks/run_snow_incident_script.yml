@@ -1,7 +1,9 @@
 ---
-
 - name: Create Snow Incident via python script
   hosts: localhost
+  gather_facts: false
   tasks:
     - name: Run snow incident script
       ansible.builtin.script: "{{ playbook_dir }}/../scripts/create_snow_incident.py"
+      environment:
+        EVENT_PAYLOAD_JSON: "{{ event_payload | default({}) | to_json }}"

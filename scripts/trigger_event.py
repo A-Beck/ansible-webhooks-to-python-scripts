@@ -11,19 +11,24 @@ import requests
 EXAMPLE_COMMAND = """
 python scripts/trigger_event.py \
   --url https://aap.example.com/eda/event-streams/.../ \
+  --type disk \
   --username redhat \
   --password redhat \
   --insecure
 """
 
-DEFAULT_PAYLOAD = {
-    "hostname": "andrew-ansible-demo.example.com",
-    "disks": [
-        {
-            "name": "disk1",
-            "use_percent": "45%",
-        }
-    ],
+PAYLOADS = {
+    "disk": {
+        "event_type": "disk",
+        "hostname": "andrew-ansible-demo.example.com",
+        "disk": "disk1",
+        "disk_percent": 45,
+    },
+    "cpu": {
+        "event_type": "cpu",
+        "hostname": "andrew-ansible-demo.example.com",
+        "cpu_percent": 85,
+    },
 }
 
 
@@ -52,12 +57,18 @@ def trigger_event(url, payload, username=None, password=None, verify=True):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="POST a disk-usage event to an AAP EDA event stream"
+        description="POST a disk or CPU event to an AAP EDA event stream"
     )
     parser.add_argument(
         "--url",
         default=os.getenv("EVENT_STREAM_URL"),
         help="Event stream URL (or set EVENT_STREAM_URL)",
+    )
+    parser.add_argument(
+        "--type",
+        choices=sorted(PAYLOADS),
+        default=os.getenv("EVENT_TYPE", "disk"),
+        help="Event type to send: disk or cpu (or set EVENT_TYPE)",
     )
     parser.add_argument(
         "--username",
@@ -79,10 +90,14 @@ def main():
     if not args.url:
         parser.error("event stream URL is required via --url or EVENT_STREAM_URL")
 
+    payload = PAYLOADS[args.type]
+    print(f"Sending {args.type} event:")
+    print(json.dumps(payload, indent=2))
+
     try:
         trigger_event(
             url=args.url,
-            payload=DEFAULT_PAYLOAD,
+            payload=payload,
             username=args.username,
             password=args.password,
             verify=not args.insecure,

@@ -26,7 +26,9 @@ controller_credential_types:
         - sn_password
     injectors:
       env:
+        # Script path uses SN_BASE_URL; servicenow.itsm uses SN_HOST
         SN_BASE_URL: !unsafe "{{ sn_base_url }}"
+        SN_HOST: !unsafe "{{ sn_base_url }}"
         SN_USERNAME: !unsafe "{{ sn_username }}"
         SN_PASSWORD: !unsafe "{{ sn_password }}"
 
@@ -70,6 +72,19 @@ controller_templates:
     credentials:
       - ServiceNow Demo
     ask_credential_on_launch: false
+    # Required so EDA can pass event_payload (and ansible_eda) as extra vars
+    ask_variables_on_launch: true
+
+  - name: open_snow_incident_itsm
+    description: Create a ServiceNow incident via servicenow.itsm.incident
+    organization: Default
+    project: ansible-webhooks-to-python-scripts
+    playbook: playbooks/run_snow_incident_itsm.yml
+    inventory: Demo Localhost
+    credentials:
+      - ServiceNow Demo
+    ask_credential_on_launch: false
+    ask_variables_on_launch: true
 
 # --- Event-Driven Ansible ---
 
@@ -85,7 +100,23 @@ eda_credentials:
       verify_ssl: "{{ aap_validate_certs | default(false) | bool }}"
 
   - name: Disk Usage Event Stream Auth
-    description: Basic auth for the disk usage webhook event stream (replace CHANGE_ME)
+    description: Basic auth for the disk usage webhook event stream
+    organization: Default
+    credential_type: Basic Event Stream
+    inputs:
+      username: redhat
+      password: redhat
+
+  - name: CPU Usage Event Stream Auth
+    description: Basic auth for the CPU usage webhook event stream
+    organization: Default
+    credential_type: Basic Event Stream
+    inputs:
+      username: redhat
+      password: redhat
+
+  - name: Combined Usage Event Stream Auth
+    description: Basic auth for the combined disk/CPU webhook event stream
     organization: Default
     credential_type: Basic Event Stream
     inputs:
@@ -106,6 +137,16 @@ eda_event_streams:
     credential_name: Disk Usage Event Stream Auth
     forward_events: true
 
+  - name: CPU Usage Event Stream
+    organization: Default
+    credential_name: CPU Usage Event Stream Auth
+    forward_events: true
+
+  - name: Combined Usage Event Stream
+    organization: Default
+    credential_name: Combined Usage Event Stream Auth
+    forward_events: true
+
 eda_decision_environments:
   - name: Demo Decision Environment
     description: Decision environment for the webhook rulebook demo
@@ -114,16 +155,48 @@ eda_decision_environments:
 
 eda_rulebook_activations:
   - name: disk_usage_webhook
-    description: Listen for disk usage webhooks and launch open_snow_incident
+    description: Disk-only stream → disk rulebook → open_snow_incident
     organization: Default
     project: ansible-webhooks-to-python-scripts
-    rulebook: basic_webhook_listener.yml
+    rulebook: disk_usage_alerts.yml
     decision_environment: Demo Decision Environment
     eda_credentials:
       - AAP Controller
     event_streams:
       - event_stream: Disk Usage Event Stream
         source_name: disk_usage_alerts
+    swap_single_source: true
+    restart_policy: always
+    enabled: true
+    state: present
+
+  - name: cpu_usage_webhook
+    description: CPU-only stream → CPU rulebook → open_snow_incident
+    organization: Default
+    project: ansible-webhooks-to-python-scripts
+    rulebook: cpu_usage_alerts.yml
+    decision_environment: Demo Decision Environment
+    eda_credentials:
+      - AAP Controller
+    event_streams:
+      - event_stream: CPU Usage Event Stream
+        source_name: cpu_usage_alerts
+    swap_single_source: true
+    restart_policy: always
+    enabled: true
+    state: present
+
+  - name: combined_usage_webhook
+    description: Combined stream → multi-type rulebook → open_snow_incident
+    organization: Default
+    project: ansible-webhooks-to-python-scripts
+    rulebook: combined_usage_alerts.yml
+    decision_environment: Demo Decision Environment
+    eda_credentials:
+      - AAP Controller
+    event_streams:
+      - event_stream: Combined Usage Event Stream
+        source_name: combined_usage_alerts
     swap_single_source: true
     restart_policy: always
     enabled: true

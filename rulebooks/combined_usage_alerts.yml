@@ -1,0 +1,34 @@
+---
+- name: Combined disk and CPU usage alerts
+  hosts: all
+  sources:
+    - name: combined_usage_alerts
+      ansible.eda.webhook:
+        host: 0.0.0.0
+        port: 5000
+        ssl_verify: no
+
+  rules:
+    - name: Open ServiceNow incident when disk usage exceeds 40%
+      condition: >
+        event.payload.event_type == "disk" and
+        event.payload.disk_percent > 40
+      action:
+        run_job_template:
+          name: open_snow_incident
+          organization: Default
+          job_args:
+            extra_vars:
+              event_payload: "{{ event.payload }}"
+
+    - name: Open ServiceNow incident when CPU usage exceeds 40%
+      condition: >
+        event.payload.event_type == "cpu" and
+        event.payload.cpu_percent > 40
+      action:
+        run_job_template:
+          name: open_snow_incident
+          organization: Default
+          job_args:
+            extra_vars:
+              event_payload: "{{ event.payload }}"

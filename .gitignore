@@ -2,3 +2,6 @@ docs
 aap_secrets.yml
 aap_vars.yml.example
 *.log
+__pycache__/
+.cursor/
+.vscode/
