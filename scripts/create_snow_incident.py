@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import os
+iimport os
 import sys
 import json
 import requests
 
 # Base endpoint for your specific instance
-BASE_URL = os.getenv("SN_BASE_URL","https://ven05174.service-now.com")
+BASE_URL = os.getenv("SN_BASE_URL", "https://ven05174.service-now.com")
 API_ENDPOINT = f"{BASE_URL}/api/now/table/incident"
 
 # Read credentials from AAP Custom Credential (or environment variables)

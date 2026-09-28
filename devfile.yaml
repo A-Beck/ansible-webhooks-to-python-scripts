@@ -35,10 +35,6 @@ commands:
       component: dev-tools
       commandLine: >
         ansible-playbook config_as_code/setup_aap.yml
-        -e aap_hostname=http://sandbox-aap
-        -e aap_username=admin
-        -e aap_password=${AAP_PASSWORD}
-        -e aap_validate_certs=false
       workingDir: ${PROJECT_SOURCE}
       group:
         kind: run

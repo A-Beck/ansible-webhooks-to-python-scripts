@@ -14,19 +14,24 @@ This demo assumes you have a Red hat Accounot
 
 - Open this repo in dev spaces
 - Launch an AAP instance
+- After AAP Instance Provisions, log in with the provided credentials. You should be able to attach an AAP trial from the subscription page.
+
+### Open Dev Spaces, Configure your environment, and run the demo
 
 ### Configure Automation Hub
 
 - Get token from https://console.redhat.com/ansible/automation-hub/token
-- Set up the ansible.cfg with the token
+- Set up the `ansible.cfg` with the token
 
 ### Install Collections
 
-`ansible-galaxy collection install -r collections/requirements.yml`
+- `ansible-galaxy collection install -r collections/requirements.yml`
 
 ### Configure AAP
 
-`ansible-playbook setup_aap.yml -e aap_hostname=http://sandbox-aap -e aap_username=admin -e aap_password=${AAP_PASSWORD} -e aap_validate_certs=false`
+- Copy `aap_secrets.yml.example` to `aap_secrets.yml`
+- Populate with reasonable values
+- Run `ansible-playbook setup_aap.yml`
 
 ### Set up the ServiceNow Credential
 
