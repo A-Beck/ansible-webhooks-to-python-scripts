@@ -1,0 +1,22 @@
+---
+- name: Disk usage alerts (servicenow.itsm)
+  hosts: all
+  sources:
+    - name: disk_usage_alerts_itsm
+      ansible.eda.webhook:
+        host: 0.0.0.0
+        port: 5000
+        ssl_verify: no
+
+  rules:
+    - name: Open ServiceNow incident when disk usage exceeds 40%
+      condition: >
+        event.payload.event_type == "disk" and
+        event.payload.disk_percent > 40
+      action:
+        run_job_template:
+          name: open_snow_incident_itsm
+          organization: Default
+          job_args:
+            extra_vars:
+              event_payload: "{{ event.payload }}"

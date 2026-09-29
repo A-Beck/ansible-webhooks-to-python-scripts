@@ -11,11 +11,12 @@ It supports two demo angles:
 
 | Event stream | Activation | Rulebook |
 | --- | --- | --- |
-| Disk Usage Event Stream | `disk_usage_webhook` | `disk_usage_alerts.yml` (disk only) |
+| Disk Usage Event Stream | `disk_usage_webhook` | `disk_usage_alerts.yml` (disk only → script JT) |
+| Disk Usage Event Stream | `disk_usage_webhook_itsm` | `disk_usage_alerts_itsm.yml` (disk only → ITSM JT) |
 | CPU Usage Event Stream | `cpu_usage_webhook` | `cpu_usage_alerts.yml` (CPU only) |
 | Combined Usage Event Stream | `combined_usage_webhook` | `combined_usage_alerts.yml` (disk + CPU) |
 
-All three activations launch the same job template (`open_snow_incident`), which runs `playbooks/run_snow_incident_script.yml` → `scripts/create_snow_incident.py`. Event fields (`event_type`, `hostname`, metrics) are passed through as extra vars so the ServiceNow incident reflects the triggering event.
+A disk event posted to the Disk Usage Event Stream is delivered to both disk activations, so you get a side-by-side script vs `servicenow.itsm` contrast from one POST.
 
 ### Script vs Ansible-native ServiceNow
 
@@ -26,7 +27,7 @@ Two job templates share the same `event_payload` contract:
 | `open_snow_incident` | `playbooks/run_snow_incident_script.yml` | Python script (`requests`) |
 | `open_snow_incident_itsm` | `playbooks/run_snow_incident_itsm.yml` | `servicenow.itsm.incident` |
 
-Rulebooks default to the script JT. To demo the native path, change the `run_job_template` `name` in a rulebook to `open_snow_incident_itsm` (or launch that JT manually with the same extra vars).
+The disk ITSM rulebook/activation is wired to the shared disk stream. CPU and combined paths still use the script JT by default.
 
 ## Demo setup
 

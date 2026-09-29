@@ -170,6 +170,22 @@ eda_rulebook_activations:
     enabled: true
     state: present
 
+  - name: disk_usage_webhook_itsm
+    description: Disk-only stream → disk ITSM rulebook → open_snow_incident_itsm
+    organization: Default
+    project: ansible-webhooks-to-python-scripts
+    rulebook: disk_usage_alerts_itsm.yml
+    decision_environment: Demo Decision Environment
+    eda_credentials:
+      - AAP Controller
+    event_streams:
+      - event_stream: Disk Usage Event Stream
+        source_name: disk_usage_alerts_itsm
+    swap_single_source: true
+    restart_policy: always
+    enabled: true
+    state: present
+
   - name: cpu_usage_webhook
     description: CPU-only stream → CPU rulebook → open_snow_incident
     organization: Default
