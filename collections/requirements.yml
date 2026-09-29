@@ -1,7 +1,5 @@
 ---
 collections:
-  - name: ansible.platform
-    version: ">=2.5.0"
   - name: ansible.hub
     version: ">=1.0.0"
   - name: ansible.controller
