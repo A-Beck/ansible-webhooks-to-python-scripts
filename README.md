@@ -70,40 +70,28 @@ Ensure the Controller and EDA projects for this repo have pulled the latest cont
 
 Use `scripts/trigger_event.py` to POST a hardcoded payload to an event stream URL. Choose the stream URL for the demo path you want, and `--type` for the payload.
 
-Auth defaults match config-as-code (`redhat` / `redhat`).
+Auth defaults match config-as-code (`redhat` / `redhat`; TLS verify off).
 
 ```bash
 # Disk-only path (platform isolation)
 python3 scripts/trigger_event.py \
   --url <DISK_USAGE_EVENT_STREAM_URL> \
-  --type disk \
-  --username redhat \
-  --password redhat \
-  --insecure
+  --type disk
 
 # CPU-only path (platform isolation)
 python3 scripts/trigger_event.py \
   --url <CPU_USAGE_EVENT_STREAM_URL> \
-  --type cpu \
-  --username redhat \
-  --password redhat \
-  --insecure
+  --type cpu
 
 # Combined path — disk event (rulebook complexity)
 python3 scripts/trigger_event.py \
   --url <COMBINED_USAGE_EVENT_STREAM_URL> \
-  --type disk \
-  --username redhat \
-  --password redhat \
-  --insecure
+  --type disk
 
 # Combined path — CPU event (rulebook complexity)
 python3 scripts/trigger_event.py \
   --url <COMBINED_USAGE_EVENT_STREAM_URL> \
-  --type cpu \
-  --username redhat \
-  --password redhat \
-  --insecure
+  --type cpu
 ```
 
 Event stream URLs are shown in AAP under **Automation Decisions → Event Streams**.

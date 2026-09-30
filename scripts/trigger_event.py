@@ -11,11 +11,11 @@ import requests
 EXAMPLE_COMMAND = """
 python scripts/trigger_event.py \
   --url https://aap.example.com/eda/event-streams/.../ \
-  --type disk \
-  --username redhat \
-  --password redhat \
-  --insecure
+  --type disk
 """
+
+DEFAULT_USERNAME = "redhat"
+DEFAULT_PASSWORD = "redhat"
 
 PAYLOADS = {
     "disk": {
@@ -32,7 +32,7 @@ PAYLOADS = {
 }
 
 
-def trigger_event(url, payload, username=None, password=None, verify=True):
+def trigger_event(url, payload, username=None, password=None, verify=False):
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
     auth = (username, password) if username and password else None
 
@@ -72,18 +72,19 @@ def main():
     )
     parser.add_argument(
         "--username",
-        default=os.getenv("EVENT_STREAM_USERNAME"),
-        help="Basic Event Stream username (or set EVENT_STREAM_USERNAME)",
+        default=os.getenv("EVENT_STREAM_USERNAME", DEFAULT_USERNAME),
+        help=f"Basic Event Stream username (default: {DEFAULT_USERNAME})",
     )
     parser.add_argument(
         "--password",
-        default=os.getenv("EVENT_STREAM_PASSWORD"),
-        help="Basic Event Stream password (or set EVENT_STREAM_PASSWORD)",
+        default=os.getenv("EVENT_STREAM_PASSWORD", DEFAULT_PASSWORD),
+        help=f"Basic Event Stream password (default: {DEFAULT_PASSWORD})",
     )
     parser.add_argument(
         "--insecure",
-        action="store_true",
-        help="Disable TLS certificate verification",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Disable TLS certificate verification (default: true; use --no-insecure to verify)",
     )
     args = parser.parse_args()
 
