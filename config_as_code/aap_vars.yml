@@ -42,6 +42,31 @@ controller_credentials:
       sn_username: "{{ sn_username }}"
       sn_password: "{{ sn_password }}"
 
+  - name: Automation Hub Certified
+    description: Red Hat Automation Hub certified (published) content
+    organization: Default
+    credential_type: Ansible Galaxy/Automation Hub API Token
+    inputs:
+      url: https://console.redhat.com/api/automation-hub/content/published/
+      auth_url: https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+      token: "{{ ah_token }}"
+
+  - name: Automation Hub Validated
+    description: Red Hat Automation Hub validated content
+    organization: Default
+    credential_type: Ansible Galaxy/Automation Hub API Token
+    inputs:
+      url: https://console.redhat.com/api/automation-hub/content/validated/
+      auth_url: https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+      token: "{{ ah_token }}"
+
+# Attach Galaxy credentials to Default so project syncs can pull collections
+aap_organizations:
+  - name: Default
+    galaxy_credentials:
+      - Automation Hub Certified
+      - Automation Hub Validated
+
 controller_projects:
   - name: ansible-webhooks-to-python-scripts
     description: Webhook to Python script demo project
