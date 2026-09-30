@@ -6,7 +6,7 @@
     - name: Create incident
       servicenow.itsm.incident:
         state: new
-        caller: Troy Ellis
+        caller: andrew.becker
         short_description: "{{ event_payload.event_type | default('unknown') }} alert on {{ event_payload.hostname | default('unknown') }}"
         description: "{{ event_payload | default({}) | to_nice_json }}"
         impact: low
