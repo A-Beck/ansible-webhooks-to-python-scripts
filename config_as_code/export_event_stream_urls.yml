@@ -1,0 +1,48 @@
+---
+# Print / write shell export lines for demo event stream URLs.
+#
+#   ansible-playbook config_as_code/export_event_stream_urls.yml
+#   source config_as_code/event_stream_urls.env
+#
+# Auth: aap_secrets.yml (same as setup_aap.yml).
+
+- name: Export event stream URLs
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    event_stream_env_file: "{{ playbook_dir }}/event_stream_urls.env"
+    event_stream_env_map:
+      Disk Usage Event Stream: DISK_USAGE_EVENT_STREAM_URL
+      CPU Usage Event Stream: CPU_USAGE_EVENT_STREAM_URL
+      Combined Usage Event Stream: COMBINED_USAGE_EVENT_STREAM_URL
+
+  pre_tasks:
+    - name: Load AAP secrets
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/aap_secrets.yml"
+
+  tasks:
+    - name: List event streams
+      ansible.eda.event_stream_info:
+        controller_host: "{{ aap_hostname }}"
+        controller_username: "{{ aap_username | default(omit) }}"
+        controller_password: "{{ aap_password | default(omit) }}"
+        controller_token: "{{ aap_token | default(omit) }}"
+        validate_certs: "{{ aap_validate_certs | default(false) }}"
+      register: event_stream_info
+
+    - name: Write export file
+      ansible.builtin.copy:
+        dest: "{{ event_stream_env_file }}"
+        mode: "0600"
+        content: |
+          {% for item in event_stream_info.event_streams %}
+          {% if item.name in event_stream_env_map %}
+          export {{ event_stream_env_map[item.name] }}={{ item.url | quote }}
+          {% endif %}
+          {% endfor %}
+
+    - name: Show how to load exports
+      ansible.builtin.debug:
+        msg: "source {{ event_stream_env_file }}"

@@ -19,3 +19,15 @@
     - name: Apply AAP configuration via dispatch
       ansible.builtin.include_role:
         name: infra.aap_configuration.dispatch
+
+    # Dispatch manages organizations before credentials exist. Re-apply orgs
+    # afterward so galaxy_credentials on Default can resolve successfully.
+    - name: Assign Galaxy credentials to organizations
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.gateway_organizations
+      vars:
+        assign_galaxy_credentials_to_org: true
+        assign_default_ee_to_org: false
+        assign_notification_templates_to_org: false
+        assign_instance_groups_to_org: false
+      when: aap_organizations is defined

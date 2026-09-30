@@ -5,3 +5,4 @@ aap_vars.yml.example
 __pycache__/
 .cursor/
 .vscode/
+event_stream_urls.env
