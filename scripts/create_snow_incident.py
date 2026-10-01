@@ -40,7 +40,7 @@ def build_payload(event):
         "urgency": os.getenv("INCIDENT_URGENCY", "3"),
         "impact": os.getenv("INCIDENT_IMPACT", "3"),
         "category": "Hardware",
-        "caller_id": "Troy Ellis",
+        "caller_id": "andrew.becker",
         "state": "1",
         "incident_state": "1",
     }
